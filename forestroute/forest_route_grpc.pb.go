@@ -36,7 +36,7 @@ func NewForestRouteClient(cc grpc.ClientConnInterface) ForestRouteClient {
 }
 
 func (c *forestRouteClient) MakeRouteSummary(ctx context.Context, opts ...grpc.CallOption) (ForestRoute_MakeRouteSummaryClient, error) {
-	stream, err := c.cc.NewStream(ctx, &ForestRoute_ServiceDesc.Streams[0], "/forestroute.ForestRoute/MakeRouteSummary", opts...)
+	stream, err := c.cc.NewStream(ctx, &ForestRoute_ServiceDesc.Streams[0], "/forestroute.ForestRoute/MakeRoute", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +70,7 @@ func (x *forestRouteMakeRouteSummaryClient) CloseAndRecv() (*RouteSummary, error
 }
 
 func (c *forestRouteClient) MakeRoute(ctx context.Context, in *Route, opts ...grpc.CallOption) (ForestRoute_MakeRouteClient, error) {
-	stream, err := c.cc.NewStream(ctx, &ForestRoute_ServiceDesc.Streams[1], "/forestroute.ForestRoute/MakeRoute", opts...)
+	stream, err := c.cc.NewStream(ctx, &ForestRoute_ServiceDesc.Streams[1], "/forestroute.ForestRoute/MakeRouteSum", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -125,10 +125,10 @@ type UnimplementedForestRouteServer struct {
 }
 
 func (UnimplementedForestRouteServer) MakeRouteSummary(ForestRoute_MakeRouteSummaryServer) error {
-	return status.Errorf(codes.Unimplemented, "method MakeRouteSummary not implemented")
+	return status.Errorf(codes.Unimplemented, "method MakeRoute not implemented")
 }
 func (UnimplementedForestRouteServer) MakeRoute(*Route, ForestRoute_MakeRouteServer) error {
-	return status.Errorf(codes.Unimplemented, "method MakeRoute not implemented")
+	return status.Errorf(codes.Unimplemented, "method MakeRouteSum not implemented")
 }
 func (UnimplementedForestRouteServer) RegisterAnimal(context.Context, *Animal) (*IsAnimalUnknown, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterAnimal not implemented")
@@ -225,12 +225,12 @@ var ForestRoute_ServiceDesc = grpc.ServiceDesc{
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "MakeRouteSummary",
+			StreamName:    "MakeRoute",
 			Handler:       _ForestRoute_MakeRouteSummary_Handler,
 			ClientStreams: true,
 		},
 		{
-			StreamName:    "MakeRoute",
+			StreamName:    "MakeRouteSum",
 			Handler:       _ForestRoute_MakeRoute_Handler,
 			ServerStreams: true,
 		},

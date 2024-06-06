@@ -6,6 +6,6 @@ import (
 
 type ForestService interface {
 	IsUnknonwAnimal(string) (bool, error)
-	MakeRoute(point []*domain.Point) domain.RouteSummary
-	MakeRouteSummary(routeName string) (error, []*domain.Point)
+	MakeRouteSum(point []*domain.Point) domain.RouteSummary
+	MakeRoute(routeName string) (error, []*domain.Point)
 }

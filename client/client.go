@@ -19,8 +19,9 @@ func main() {
 	client := makeGrpcClient()
 
 	var answer string
+gori:
 	for {
-		makeUSerInput(answer)
+		makeUSerInput(&answer)
 
 		//::::SWITCH ON ANSWER
 
@@ -33,7 +34,7 @@ func main() {
 			}
 		case "2":
 			{
-				//:::MAKE Make Route
+				//:::MAKE  RouteSummary
 				makeRoouteSummary(ctx, client)
 				continue
 			}
@@ -44,16 +45,17 @@ func main() {
 			continue
 		default:
 			println("Exit")
-			break
+			break gori
 		}
 
 	}
 
 }
 
-func makeUSerInput(answer string) {
-	println("Enter your action ::::\n\t 1.) Register Animal \n\t2.)MakeRoute\n\t3.)MakeRouteSummary\n\t\t :::::")
-	_, err := fmt.Scan(&answer)
+func makeUSerInput(answer *string) {
+	println("Enter your action ::::\n\t 1.) Register Animal \n\t2.)MakeRouteSum\n\t3.)MakeRoute\n\t\t :::::")
+	_, err := fmt.Scan(answer)
+	println("answer is :::", *answer)
 	if err != nil {
 		panic("BAD INPUT!!!")
 	}
@@ -70,6 +72,7 @@ func makeGrpcClient() forestroute.ForestRouteClient {
 
 func makeRoute(ctx context.Context, client forestroute.ForestRouteClient) {
 	var routeName string
+	routePoints = make([]*domain.Point, 0)
 	println("Enter your route to geting points for ... ")
 	_, err := fmt.Scan(&routeName)
 	if err != nil {
@@ -94,7 +97,7 @@ func makeRoute(ctx context.Context, client forestroute.ForestRouteClient) {
 
 	}
 
-	println(fmt.Sprintf("::::: POINTS FOR ROUTE(count) -->>> %s ::::::", len(routePoints)))
+	println(fmt.Sprintf("::::: POINTS FOR ROUTE(count) -->>> %d ::::::", len(routePoints)))
 	println("DONE!!!")
 
 }
@@ -117,7 +120,7 @@ func makeRoouteSummary(ctx context.Context, client forestroute.ForestRouteClient
 	if err != nil {
 		panic(fmt.Errorf("Error while getting route summary", err))
 	}
-	println(fmt.Sprintf("::::: ROUTE SUMMARY -->>> %s ::::::", recv.StepsCount))
+	println(fmt.Sprintf("::::: ROUTE SUMMARY -->>> %d ::::::", recv.StepsCount))
 	println("DONE!!!")
 
 }
@@ -136,6 +139,6 @@ func registerAnimal(ctx context.Context, client forestroute.ForestRouteClient) {
 		panic(fmt.Errorf("Error in getting registering animal::: %s", err))
 	}
 	println("Animal:: ")
-	println(fmt.Sprintf("::::: KNOWN ANIMAL -->>> %s ::::::", unknown.Known))
+	println(fmt.Sprintf("::::: KNOWN ANIMAL -->>> %t ::::::", unknown.Known))
 	println("DONE!!!")
 }

@@ -351,11 +351,11 @@ var file_forestroute_forest_route_proto_depIdxs = []int32{
 	5, // 0: forestroute.RouteSummary.duration:type_name -> google.protobuf.Timestamp
 	4, // 1: forestroute.Route.start:type_name -> forestroute.Point
 	4, // 2: forestroute.Route.finish:type_name -> forestroute.Point
-	4, // 3: forestroute.ForestRoute.MakeRouteSummary:input_type -> forestroute.Point
-	3, // 4: forestroute.ForestRoute.MakeRoute:input_type -> forestroute.Route
+	4, // 3: forestroute.ForestRoute.MakeRoute:input_type -> forestroute.Point
+	3, // 4: forestroute.ForestRoute.MakeRouteSum:input_type -> forestroute.Route
 	0, // 5: forestroute.ForestRoute.RegisterAnimal:input_type -> forestroute.Animal
-	2, // 6: forestroute.ForestRoute.MakeRouteSummary:output_type -> forestroute.RouteSummary
-	4, // 7: forestroute.ForestRoute.MakeRoute:output_type -> forestroute.Point
+	2, // 6: forestroute.ForestRoute.MakeRoute:output_type -> forestroute.RouteSummary
+	4, // 7: forestroute.ForestRoute.MakeRouteSum:output_type -> forestroute.Point
 	1, // 8: forestroute.ForestRoute.RegisterAnimal:output_type -> forestroute.IsAnimalUnknown
 	6, // [6:9] is the sub-list for method output_type
 	3, // [3:6] is the sub-list for method input_type

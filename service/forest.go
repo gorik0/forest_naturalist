@@ -13,7 +13,7 @@ type ForestUsecase struct {
 	Animals []string
 }
 
-func (f *ForestUsecase) MakeRoute(point []*domain.Point) domain.RouteSummary {
+func (f *ForestUsecase) MakeRouteSum(point []*domain.Point) domain.RouteSummary {
 	return domain.RouteSummary{
 
 		StepsCount: len(point),
@@ -21,7 +21,7 @@ func (f *ForestUsecase) MakeRoute(point []*domain.Point) domain.RouteSummary {
 
 }
 
-func (f *ForestUsecase) MakeRouteSummary(routeName string) (error, []*domain.Point) {
+func (f *ForestUsecase) MakeRoute(routeName string) (error, []*domain.Point) {
 	var points []*domain.Point
 	if contain := slices.Contains(generator2.AvailableRoute, routeName); !contain {
 		return fmt.Errorf("route is unknown!!!"), points
@@ -35,6 +35,10 @@ func MakeAnimapls() []string {
 func (f *ForestUsecase) IsUnknonwAnimal(animal string) (bool, error) {
 
 	return slices.Contains(f.Animals, animal), nil
+}
+
+func NewForestService() iservice.ForestService {
+	return &ForestUsecase{Animals: MakeAnimapls()}
 }
 
 var _ iservice.ForestService = &ForestUsecase{}
