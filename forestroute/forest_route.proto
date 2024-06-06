@@ -1,0 +1,50 @@
+syntax="proto3";
+option  go_package="./forestroute";
+
+
+import "google/protobuf/timestamp.proto";
+
+package forestroute;
+
+
+
+service ForestRoute{
+
+
+    rpc MakeRoute(Route) returns (stream Point){}
+    rpc MakeRouteSummary(Route) returns (RouteSummary){}
+
+
+
+    rpc RegisterAnimal(Animal) returns(IsAnimalUnknown) {}
+
+
+}
+
+
+message Animal{
+    string  name =1;
+}
+message IsAnimalUnknown{
+    bool known = 1;
+}
+
+message RouteSummary{
+    int32 StepsCount =1;
+    google.protobuf.Timestamp duration =2;
+}
+message Route{
+
+    string name = 1;
+    Point start =2;
+    Point finish =3;
+
+}
+
+message Point{
+
+    int32 position=1;
+
+}
+
+
