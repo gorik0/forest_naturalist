@@ -11,8 +11,8 @@ package forestroute;
 service ForestRoute{
 
 
+    rpc MakeRouteSummary(stream Point) returns (RouteSummary){}
     rpc MakeRoute(Route) returns (stream Point){}
-    rpc MakeRouteSummary(Route) returns (RouteSummary){}
 
 
 

@@ -22,8 +22,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ForestRouteClient interface {
+	MakeRouteSummary(ctx context.Context, opts ...grpc.CallOption) (ForestRoute_MakeRouteSummaryClient, error)
 	MakeRoute(ctx context.Context, in *Route, opts ...grpc.CallOption) (ForestRoute_MakeRouteClient, error)
-	MakeRouteSummary(ctx context.Context, in *Route, opts ...grpc.CallOption) (*RouteSummary, error)
 	RegisterAnimal(ctx context.Context, in *Animal, opts ...grpc.CallOption) (*IsAnimalUnknown, error)
 }
 
@@ -35,8 +35,42 @@ func NewForestRouteClient(cc grpc.ClientConnInterface) ForestRouteClient {
 	return &forestRouteClient{cc}
 }
 
+func (c *forestRouteClient) MakeRouteSummary(ctx context.Context, opts ...grpc.CallOption) (ForestRoute_MakeRouteSummaryClient, error) {
+	stream, err := c.cc.NewStream(ctx, &ForestRoute_ServiceDesc.Streams[0], "/forestroute.ForestRoute/MakeRouteSummary", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &forestRouteMakeRouteSummaryClient{stream}
+	return x, nil
+}
+
+type ForestRoute_MakeRouteSummaryClient interface {
+	Send(*Point) error
+	CloseAndRecv() (*RouteSummary, error)
+	grpc.ClientStream
+}
+
+type forestRouteMakeRouteSummaryClient struct {
+	grpc.ClientStream
+}
+
+func (x *forestRouteMakeRouteSummaryClient) Send(m *Point) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *forestRouteMakeRouteSummaryClient) CloseAndRecv() (*RouteSummary, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(RouteSummary)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *forestRouteClient) MakeRoute(ctx context.Context, in *Route, opts ...grpc.CallOption) (ForestRoute_MakeRouteClient, error) {
-	stream, err := c.cc.NewStream(ctx, &ForestRoute_ServiceDesc.Streams[0], "/forestroute.ForestRoute/MakeRoute", opts...)
+	stream, err := c.cc.NewStream(ctx, &ForestRoute_ServiceDesc.Streams[1], "/forestroute.ForestRoute/MakeRoute", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -67,15 +101,6 @@ func (x *forestRouteMakeRouteClient) Recv() (*Point, error) {
 	return m, nil
 }
 
-func (c *forestRouteClient) MakeRouteSummary(ctx context.Context, in *Route, opts ...grpc.CallOption) (*RouteSummary, error) {
-	out := new(RouteSummary)
-	err := c.cc.Invoke(ctx, "/forestroute.ForestRoute/MakeRouteSummary", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *forestRouteClient) RegisterAnimal(ctx context.Context, in *Animal, opts ...grpc.CallOption) (*IsAnimalUnknown, error) {
 	out := new(IsAnimalUnknown)
 	err := c.cc.Invoke(ctx, "/forestroute.ForestRoute/RegisterAnimal", in, out, opts...)
@@ -89,8 +114,8 @@ func (c *forestRouteClient) RegisterAnimal(ctx context.Context, in *Animal, opts
 // All implementations must embed UnimplementedForestRouteServer
 // for forward compatibility
 type ForestRouteServer interface {
+	MakeRouteSummary(ForestRoute_MakeRouteSummaryServer) error
 	MakeRoute(*Route, ForestRoute_MakeRouteServer) error
-	MakeRouteSummary(context.Context, *Route) (*RouteSummary, error)
 	RegisterAnimal(context.Context, *Animal) (*IsAnimalUnknown, error)
 	mustEmbedUnimplementedForestRouteServer()
 }
@@ -99,11 +124,11 @@ type ForestRouteServer interface {
 type UnimplementedForestRouteServer struct {
 }
 
+func (UnimplementedForestRouteServer) MakeRouteSummary(ForestRoute_MakeRouteSummaryServer) error {
+	return status.Errorf(codes.Unimplemented, "method MakeRouteSummary not implemented")
+}
 func (UnimplementedForestRouteServer) MakeRoute(*Route, ForestRoute_MakeRouteServer) error {
 	return status.Errorf(codes.Unimplemented, "method MakeRoute not implemented")
-}
-func (UnimplementedForestRouteServer) MakeRouteSummary(context.Context, *Route) (*RouteSummary, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method MakeRouteSummary not implemented")
 }
 func (UnimplementedForestRouteServer) RegisterAnimal(context.Context, *Animal) (*IsAnimalUnknown, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterAnimal not implemented")
@@ -119,6 +144,32 @@ type UnsafeForestRouteServer interface {
 
 func RegisterForestRouteServer(s grpc.ServiceRegistrar, srv ForestRouteServer) {
 	s.RegisterService(&ForestRoute_ServiceDesc, srv)
+}
+
+func _ForestRoute_MakeRouteSummary_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ForestRouteServer).MakeRouteSummary(&forestRouteMakeRouteSummaryServer{stream})
+}
+
+type ForestRoute_MakeRouteSummaryServer interface {
+	SendAndClose(*RouteSummary) error
+	Recv() (*Point, error)
+	grpc.ServerStream
+}
+
+type forestRouteMakeRouteSummaryServer struct {
+	grpc.ServerStream
+}
+
+func (x *forestRouteMakeRouteSummaryServer) SendAndClose(m *RouteSummary) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *forestRouteMakeRouteSummaryServer) Recv() (*Point, error) {
+	m := new(Point)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 func _ForestRoute_MakeRoute_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -140,24 +191,6 @@ type forestRouteMakeRouteServer struct {
 
 func (x *forestRouteMakeRouteServer) Send(m *Point) error {
 	return x.ServerStream.SendMsg(m)
-}
-
-func _ForestRoute_MakeRouteSummary_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Route)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ForestRouteServer).MakeRouteSummary(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/forestroute.ForestRoute/MakeRouteSummary",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ForestRouteServer).MakeRouteSummary(ctx, req.(*Route))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _ForestRoute_RegisterAnimal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -186,15 +219,16 @@ var ForestRoute_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ForestRouteServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "MakeRouteSummary",
-			Handler:    _ForestRoute_MakeRouteSummary_Handler,
-		},
-		{
 			MethodName: "RegisterAnimal",
 			Handler:    _ForestRoute_RegisterAnimal_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "MakeRouteSummary",
+			Handler:       _ForestRoute_MakeRouteSummary_Handler,
+			ClientStreams: true,
+		},
 		{
 			StreamName:    "MakeRoute",
 			Handler:       _ForestRoute_MakeRoute_Handler,
